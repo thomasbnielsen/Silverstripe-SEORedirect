@@ -1,10 +1,12 @@
 <?php
+
 /**
  * SEORedirect module
  *
  * @author Nobrainer Web <mail@nobrainer.dk>
  * @version 1.0
  */
+
 class SEORedirect extends DataObjectDecorator{
 	/**
 	 * Method to construct
@@ -46,19 +48,25 @@ class SEORedirect extends DataObjectDecorator{
         $fields->addFieldToTab('Root.Content.Redirect', $Redirect);
 	}
 	
+	
 	/**
 	 * Method to handle request
 	 */
 	public static function handleRequest($request){
 		//get request variables
-		$baseURL    = str_replace('/index.php/', '/', Director::BaseURL());
-		$requestURI = str_replace('/index.php/', '/', $_SERVER['REQUEST_URI']);
-		$link       = rtrim(str_replace($baseURL, '', $requestURI), '/');
-		
-		if( $target = self::get_by_link($link)  ){
+		$baseURL    = str_replace('index.php/', '', Director::BaseURL());
+		$requestURI = str_replace('index.php/', '', $_SERVER['REQUEST_URI']);
+        
+        if( $baseURL  == '' || $baseURL == '/' ){
+            $link  = trim($requestURI, '/');
+        }else{
+            $link  = rtrim(str_replace($baseURL, '', $requestURI), '/');
+        }
+        
+        if( $target = self::get_by_link($link)  ){
 			$TargetLink = $target->TargetLink ? $target->TargetLink :
-				( $target->TargetPage()->Exists() ? str_replace('/index.php/', '',$target->TargetPage()->Link()) : null );
-			
+				( $target->TargetPage()->Exists() ? str_replace('/index.php/', '/',$target->TargetPage()->Link()) : null );
+                
             if($TargetLink){
 				//Forward parameters to target
 				if( isset($target->ForwardParameters) && $target->ForwardParameters ){
@@ -134,9 +142,19 @@ class SEORedirectUrl extends DataObject{
 		'IsActive'
 	);
 	
+	public static $defaults = array(
+		'Active' => 1
+	);
+	
 	public function getIsActive(){
 		return $this->Active ? 'Yes' : 'No';
 	}
+	
+	/*
+	public static $searchable_fields = array(
+		'Source' => array('filter' => 'PartialMatchFilter')
+	);
+	*/
 
 	/**
 	 * Returns a link mapping for a link if one exists.
