@@ -2,7 +2,7 @@
 /**
  * SEORedirect module
  *
- * @author AnhLD <support@anhld.com>
+ * @author NobrainerWeb <mail@nobrainer.dk>
  * @version 1.0
  */
 class SEORedirect extends DataObjectDecorator{
